@@ -10,9 +10,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.RowFilter;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
@@ -38,7 +39,9 @@ public class Inventory extends javax.swing.JFrame {
         updateCustomersTable();
         updateReceiptsTable();
         rowSorter = new TableRowSorter<>(itemsTable.getModel());
+        itemsTable.setRowSorter(rowSorter);
         rowSorter2 = new TableRowSorter<>(customersTable.getModel());
+        customersTable.setRowSorter(rowSorter2);
         PromptSupport.init("Search", Color.GRAY, Color.WHITE,tfFindCust);
         BuddySupport.addLeft(searchImage2, tfFindCust);
         PromptSupport.init("Search", Color.GRAY, Color.WHITE,tfFindItem);
@@ -69,12 +72,9 @@ public class Inventory extends javax.swing.JFrame {
             }
         };
         tfFindItem = new javax.swing.JTextField();
-        bFindItem = new javax.swing.JButton();
-        bAllItems = new javax.swing.JButton();
         searchImage2 = new javax.swing.JLabel();
         customersPanel = new javax.swing.JPanel();
         tfFindCust = new javax.swing.JTextField();
-        bFindCust = new javax.swing.JButton();
         jScrollPane4 = new javax.swing.JScrollPane();
         customersTable = new javax.swing.JTable(){
             @Override
@@ -85,7 +85,6 @@ public class Inventory extends javax.swing.JFrame {
         bDeleteCust = new javax.swing.JButton();
         bEditCust = new javax.swing.JButton();
         bCreateCust = new javax.swing.JButton();
-        bAllCust = new javax.swing.JButton();
         bRental = new javax.swing.JButton();
         searchImage1 = new javax.swing.JLabel();
         receiptsPanel = new javax.swing.JPanel();
@@ -161,33 +160,25 @@ public class Inventory extends javax.swing.JFrame {
         jScrollPane1.setViewportView(itemsTable);
 
         tfFindItem.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
-        tfFindItem.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                tfFindItemFocusGained(evt);
+        tfFindItem.getDocument().addDocumentListener(new DocumentListener(){
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                filter();
             }
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                tfFindItemFocusLost(evt);
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                filter();
             }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
         });
 
-        bFindItem.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
-        bFindItem.setText("Find");
-        bFindItem.setVisible(false);
-        bFindItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                bFindItemActionPerformed(evt);
-            }
-        });
-
-        bAllItems.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
-        bAllItems.setText("--All items--");
-        bAllItems.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                bAllItemsActionPerformed(evt);
-            }
-        });
-
-        searchImage2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/final_project_2sem/search-icon-01.jpg"))); // NOI18N
+        searchImage2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/final_project_2sem/Search-icon.png"))); // NOI18N
 
         javax.swing.GroupLayout itemsPanelLayout = new javax.swing.GroupLayout(itemsPanel);
         itemsPanel.setLayout(itemsPanelLayout);
@@ -208,10 +199,6 @@ public class Inventory extends javax.swing.JFrame {
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(searchImage2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(bFindItem)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(bAllItems)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(tfFindItem, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
@@ -224,12 +211,9 @@ public class Inventory extends javax.swing.JFrame {
                 .addGap(15, 15, 15)
                 .addGroup(itemsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(searchImage2)
-                    .addGroup(itemsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(bFindItem)
-                        .addComponent(tfFindItem, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(bAllItems)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 265, Short.MAX_VALUE)
+                    .addComponent(tfFindItem, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(7, 7, 7)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 266, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(itemsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(bCreateItem)
@@ -241,21 +225,20 @@ public class Inventory extends javax.swing.JFrame {
         jTabbedPane1.addTab("  Items Catalogue  ", itemsPanel);
 
         tfFindCust.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
-        tfFindCust.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                tfFindCustFocusGained(evt);
+        tfFindItem.getDocument().addDocumentListener(new DocumentListener(){
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                filter();
             }
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                tfFindCustFocusLost(evt);
-            }
-        });
 
-        bFindCust.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
-        bFindCust.setText("Find");
-        bFindCust.setVisible(false);
-        bFindCust.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                bFindCustActionPerformed(evt);
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                filter();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                throw new UnsupportedOperationException("Not supported yet.");
             }
         });
 
@@ -307,14 +290,6 @@ public class Inventory extends javax.swing.JFrame {
             }
         });
 
-        bAllCust.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
-        bAllCust.setText("--All--");
-        bAllCust.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                bAllCustActionPerformed(evt);
-            }
-        });
-
         bRental.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
         bRental.setText("Rentals");
         bRental.setEnabled(false);
@@ -324,7 +299,7 @@ public class Inventory extends javax.swing.JFrame {
             }
         });
 
-        searchImage1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/final_project_2sem/search-icon-01.jpg"))); // NOI18N
+        searchImage1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/final_project_2sem/Search-icon.png"))); // NOI18N
 
         javax.swing.GroupLayout customersPanelLayout = new javax.swing.GroupLayout(customersPanel);
         customersPanel.setLayout(customersPanelLayout);
@@ -337,10 +312,6 @@ public class Inventory extends javax.swing.JFrame {
                     .addGroup(customersPanelLayout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(searchImage1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(bFindCust)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(bAllCust)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(tfFindCust, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(customersPanelLayout.createSequentialGroup()
@@ -361,13 +332,10 @@ public class Inventory extends javax.swing.JFrame {
             .addGroup(customersPanelLayout.createSequentialGroup()
                 .addGap(15, 15, 15)
                 .addGroup(customersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(searchImage1, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(customersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(tfFindCust, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(bFindCust)
-                        .addComponent(bAllCust)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 265, Short.MAX_VALUE)
+                    .addComponent(tfFindCust, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(searchImage1))
+                .addGap(7, 7, 7)
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 266, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(customersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(bCreateCust)
@@ -493,6 +461,15 @@ public class Inventory extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
     
+    private void filter() {
+        String text = tfFindItem.getText();
+        if (text.trim().length() == 0) { //trim() returns a copy of the string, with leading and trailing whitespace omitted.
+            rowSorter.setRowFilter(null);
+        } else {
+            rowSorter.setRowFilter(RowFilter.regexFilter("(?i)" + text.trim()));
+        }
+    }
+    
     public static void updateItemsTable() {                   
         try {
             String sql = "SELECT SerialNo,Type,Brand,Model,Price,Status,ReturnDate FROM villa_watt_inventory.items;";
@@ -589,21 +566,6 @@ public class Inventory extends javax.swing.JFrame {
         }             
     }
     
-    private void bFindItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bFindItemActionPerformed
-        itemsTable.setRowSorter(rowSorter);
-        String text = tfFindItem.getText();
-        if (text.trim().length() == 0) { //trim() returns a copy of the string, with leading and trailing whitespace omitted.
-            rowSorter.setRowFilter(null);
-        } else {
-            rowSorter.setRowFilter(RowFilter.regexFilter("(?i)" + text.trim()));
-        }
-        tfFindItem.setText("");
-    }//GEN-LAST:event_bFindItemActionPerformed
-
-    private void bAllItemsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bAllItemsActionPerformed
-        rowSorter.setRowFilter(null);        
-    }//GEN-LAST:event_bAllItemsActionPerformed
-
     private void bCreateItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bCreateItemActionPerformed
         ItemInfo itemI = ItemInfo.getItemI();
         
@@ -848,21 +810,6 @@ public class Inventory extends javax.swing.JFrame {
         }
     }
     
-    private void bAllCustActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bAllCustActionPerformed
-        rowSorter2.setRowFilter(null);
-    }//GEN-LAST:event_bAllCustActionPerformed
-
-    private void bFindCustActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bFindCustActionPerformed
-        customersTable.setRowSorter(rowSorter2);
-        String text = tfFindCust.getText();
-        if (text.trim().length() == 0) { //trim() returns a copy of the string, with leading and trailing whitespace omitted.
-            rowSorter2.setRowFilter(null);
-        } else {
-            rowSorter2.setRowFilter(RowFilter.regexFilter("(?i)" + text.trim()));
-        }
-        tfFindCust.setText("");
-    }//GEN-LAST:event_bFindCustActionPerformed
-
     private void itemsTableMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_itemsTableMousePressed
         if(evt.getClickCount() == 2) {
             ItemInfo itemI = ItemInfo.getItemI();
@@ -987,22 +934,6 @@ public class Inventory extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Please select an item to delete", "Message", JOptionPane.WARNING_MESSAGE);
     }//GEN-LAST:event_bDeleteReceiptActionPerformed
 
-    private void tfFindCustFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_tfFindCustFocusGained
-        rootPane.setDefaultButton(bFindCust);
-    }//GEN-LAST:event_tfFindCustFocusGained
-
-    private void tfFindItemFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_tfFindItemFocusGained
-        rootPane.setDefaultButton(bFindItem);
-    }//GEN-LAST:event_tfFindItemFocusGained
-
-    private void tfFindCustFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_tfFindCustFocusLost
-        rootPane.setDefaultButton(null);
-    }//GEN-LAST:event_tfFindCustFocusLost
-
-    private void tfFindItemFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_tfFindItemFocusLost
-        rootPane.setDefaultButton(null);
-    }//GEN-LAST:event_tfFindItemFocusLost
-
     private void bChangePassActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bChangePassActionPerformed
         Password pass = Password.getPassword();
         
@@ -1093,8 +1024,6 @@ public class Inventory extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton bAllCust;
-    private javax.swing.JButton bAllItems;
     private javax.swing.JButton bChangePass;
     private javax.swing.JButton bCreateCust;
     private javax.swing.JButton bCreateItem;
@@ -1103,8 +1032,6 @@ public class Inventory extends javax.swing.JFrame {
     private javax.swing.JButton bDeleteReceipt;
     private javax.swing.JButton bEditCust;
     private javax.swing.JButton bEditItem;
-    private javax.swing.JButton bFindCust;
-    private javax.swing.JButton bFindItem;
     private javax.swing.JButton bLogOut;
     private javax.swing.JButton bRental;
     private javax.swing.JPanel customersPanel;

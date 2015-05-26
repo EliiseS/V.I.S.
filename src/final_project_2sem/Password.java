@@ -95,8 +95,7 @@ public class Password extends javax.swing.JFrame {
         errOldPass.setForeground(new java.awt.Color(255, 0, 0));
         errOldPass.setText("Incorrect password");
 
-        passCheck.setIcon(new javax.swing.ImageIcon(getClass().getResource("/final_project_2sem/Symbol_check.png"))); // NOI18N
-        passCheck.setText("jLabel4");
+        passCheck.setIcon(new javax.swing.ImageIcon(getClass().getResource("/final_project_2sem/Check-icon.png"))); // NOI18N
         passCheck.setVisible(false);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
