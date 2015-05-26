@@ -14,6 +14,8 @@ import java.util.logging.Logger;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 public class Password extends javax.swing.JFrame {
     private static Password p;
@@ -70,6 +72,22 @@ public class Password extends javax.swing.JFrame {
         tfNewPass.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
 
         tfOldPass.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
+        tfOldPass.getDocument().addDocumentListener(new DocumentListener(){
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                activePassCheck();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                activePassCheck();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+        });
 
         bCancel.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
         bCancel.setText("Cancel");
@@ -157,7 +175,28 @@ public class Password extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+    
+    private void activePassCheck() {
+        String oldPass = "";
+        try {
+            String sql = "SELECT Password FROM villa_watt_inventory.users WHERE UserID = 1";    //Change if more than 1 account!
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            ResultSet rs = pstmt.executeQuery();             
+            while(rs.next()) {
+                oldPass = rs.getString("Password");
+            }
 
+        } catch (SQLException ex) {
+            Logger.getLogger(Password.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        String text = new String(tfOldPass.getPassword());
+        if(text.equals(oldPass))
+            passCheck.setVisible(true);
+        else
+            passCheck.setVisible(false);
+    }
+    
     private void bCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bCancelActionPerformed
         this.dispose();
     }//GEN-LAST:event_bCancelActionPerformed
@@ -172,11 +211,10 @@ public class Password extends javax.swing.JFrame {
         if(oldPass.equals("") || newPass.equals("") || confirm.equals(""))
                 JOptionPane.showMessageDialog(this, "All fields must be filled in", "Warning", JOptionPane.WARNING_MESSAGE);
         
-        else if(checkPass() == -1) 
+        else if(!passCheck.isVisible()) 
             errOldPass.setVisible(true);            
         
         else {
-            passCheck.setVisible(true);
             if(newPass.equals(confirm)) {
                 try {
                     String sql = "UPDATE villa_watt_inventory.users SET Password = ? WHERE UserID = 1;";    //Change if more than 1 account!
@@ -202,23 +240,6 @@ public class Password extends javax.swing.JFrame {
         rootPane.setDefaultButton(bChangePass);
     }//GEN-LAST:event_formWindowGainedFocus
     
-    private int checkPass() {
-        String pass = new String(tfOldPass.getPassword());
-        int id = -1;
-        try {    
-            String sql = "SELECT UserID FROM villa_watt_inventory.users WHERE Password = '"+pass+"';";
-            
-            PreparedStatement pstmt = conn.prepareStatement(sql);
-            ResultSet rs = pstmt.executeQuery();             
-            while(rs.next()) {
-                id = rs.getInt("UserID");
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(Password.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return id;
-    }
-
     public JLabel getErrNewPass() {
         return errNewPass;
     }
