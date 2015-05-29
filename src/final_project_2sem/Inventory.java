@@ -109,7 +109,6 @@ public class Inventory extends javax.swing.JFrame {
 
         bEditItem.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
         bEditItem.setText("Edit");
-        bEditItem.setEnabled(false);
         bEditItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 bEditItemActionPerformed(evt);
@@ -118,7 +117,6 @@ public class Inventory extends javax.swing.JFrame {
 
         bDeleteItem.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
         bDeleteItem.setText("Delete");
-        bDeleteItem.setEnabled(false);
         bDeleteItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 bDeleteItemActionPerformed(evt);
@@ -146,14 +144,6 @@ public class Inventory extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        itemsTable.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                itemsTableFocusGained(evt);
-            }
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                itemsTableFocusLost(evt);
-            }
-        });
         itemsTable.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 itemsTableMousePressed(evt);
@@ -256,19 +246,10 @@ public class Inventory extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        customersTable.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                customersTableFocusGained(evt);
-            }
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                customersTableFocusLost(evt);
-            }
-        });
         jScrollPane4.setViewportView(customersTable);
 
         bDeleteCust.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
         bDeleteCust.setText("Delete");
-        bDeleteCust.setEnabled(false);
         bDeleteCust.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 bDeleteCustActionPerformed(evt);
@@ -277,7 +258,6 @@ public class Inventory extends javax.swing.JFrame {
 
         bEditCust.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
         bEditCust.setText("Edit");
-        bEditCust.setEnabled(false);
         bEditCust.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 bEditCustActionPerformed(evt);
@@ -294,7 +274,6 @@ public class Inventory extends javax.swing.JFrame {
 
         bRental.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
         bRental.setText("Rentals");
-        bRental.setEnabled(false);
         bRental.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 bRentalActionPerformed(evt);
@@ -361,14 +340,6 @@ public class Inventory extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        receiptsTable.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                receiptsTableFocusGained(evt);
-            }
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                receiptsTableFocusLost(evt);
-            }
-        });
         receiptsTable.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 receiptsTableMousePressed(evt);
@@ -378,7 +349,6 @@ public class Inventory extends javax.swing.JFrame {
 
         bDeleteReceipt.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
         bDeleteReceipt.setText("Delete");
-        bDeleteReceipt.setEnabled(false);
         bDeleteReceipt.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 bDeleteReceiptActionPerformed(evt);
@@ -878,9 +848,6 @@ public class Inventory extends javax.swing.JFrame {
             rent.getCustKey().setVisible(false);
             
             rent.setVisible(true); 
-            rent.getbAdd().setEnabled(false);
-            rent.getbRemove().setEnabled(false);
-            rent.getjXDatePicker1().setEnabled(false);
         }
         else
             JOptionPane.showMessageDialog(this, "Please select a customer first", "Message", JOptionPane.WARNING_MESSAGE);
@@ -966,39 +933,6 @@ public class Inventory extends javax.swing.JFrame {
         
         pass.setVisible(true);
     }//GEN-LAST:event_bChangePassActionPerformed
-
-    private void itemsTableFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_itemsTableFocusGained
-        bDeleteItem.setEnabled(true);
-        bEditItem.setEnabled(true);
-    }//GEN-LAST:event_itemsTableFocusGained
-
-    private void itemsTableFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_itemsTableFocusLost
-        bDeleteItem.setEnabled(false);
-        bEditItem.setEnabled(false);
-        //itemsTable.getSelectionModel().clearSelection();
-    }//GEN-LAST:event_itemsTableFocusLost
-
-    private void customersTableFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_customersTableFocusGained
-        bDeleteCust.setEnabled(true);
-        bEditCust.setEnabled(true);
-        bRental.setEnabled(true);
-    }//GEN-LAST:event_customersTableFocusGained
-
-    private void customersTableFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_customersTableFocusLost
-        bDeleteCust.setEnabled(false);
-        bEditCust.setEnabled(false);
-        bRental.setEnabled(false);
-        //customersTable.getSelectionModel().clearSelection();
-    }//GEN-LAST:event_customersTableFocusLost
-
-    private void receiptsTableFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_receiptsTableFocusGained
-        bDeleteReceipt.setEnabled(true);
-    }//GEN-LAST:event_receiptsTableFocusGained
-
-    private void receiptsTableFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_receiptsTableFocusLost
-        bDeleteReceipt.setEnabled(false);
-        //receiptsTable.getSelectionModel().clearSelection();
-    }//GEN-LAST:event_receiptsTableFocusLost
          
     public static HashMap<Integer, Customer> getCustomerMap() {
         return customersMap;

@@ -97,7 +97,6 @@ public class RentalProcess extends javax.swing.JFrame {
 
         jXDatePicker1.setFormats(new String[] {"yyyy-MM-dd"});
         jXDatePicker1.setToolTipText("Select the item first");
-        jXDatePicker1.setEnabled(false);
         jXDatePicker1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jXDatePicker1ActionPerformed(evt);
@@ -124,22 +123,6 @@ public class RentalProcess extends javax.swing.JFrame {
         jScrollPane2.setViewportView(tblItems);
 
         tblRented.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
-        tblRented.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-                "SerialNo", "Type", "Brand", "Model", "Return Date"
-            }
-        ) {
-            boolean[] canEdit = new boolean [] {
-                false, false, false, false, false
-            };
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
         tblRented.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
                 tblRentedFocusGained(evt);
@@ -157,7 +140,6 @@ public class RentalProcess extends javax.swing.JFrame {
 
         bRemove.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
         bRemove.setText("Remove");
-        bRemove.setEnabled(false);
         bRemove.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 bRemoveActionPerformed(evt);
@@ -166,7 +148,6 @@ public class RentalProcess extends javax.swing.JFrame {
 
         bAdd.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
         bAdd.setText("Add");
-        bAdd.setEnabled(false);
         bAdd.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 bAddActionPerformed(evt);
@@ -281,7 +262,10 @@ public class RentalProcess extends javax.swing.JFrame {
     }//GEN-LAST:event_tblRentedMousePressed
 
     private void bAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bAddActionPerformed
-        add();
+        if(tblItems.getSelectedRow() != -1)
+            add();
+        else
+            JOptionPane.showMessageDialog(this, "Please select an item to rent out");
     }//GEN-LAST:event_bAddActionPerformed
     
     private void add() {
@@ -299,7 +283,10 @@ public class RentalProcess extends javax.swing.JFrame {
     }
     
     private void bRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bRemoveActionPerformed
-        remove();
+        if(tblRented.getSelectedRow() != -1)
+            remove();
+        else
+            JOptionPane.showMessageDialog(this, "Please select an item to return");
     }//GEN-LAST:event_bRemoveActionPerformed
     
     private void remove() {
@@ -316,23 +303,31 @@ public class RentalProcess extends javax.swing.JFrame {
     }
     
     private void jXDatePicker1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jXDatePicker1ActionPerformed
-        String chosenDate = jXDatePicker1.getEditor().getText();
-        String d = df2.format(new Date());
-        try {    
-            Date chosen = df2.parse(chosenDate);
-            Date today = df2.parse(d);
-            
-            if (chosen.compareTo(today) <= 0)
-                JOptionPane.showMessageDialog(this, "Invalid date", "Error", JOptionPane.ERROR_MESSAGE);
-            
-            else {           
-                int[] rows = tblRented.getSelectedRows();
-                for(int eachRow : rows)
-                    modelRented.setValueAt(chosenDate, eachRow, 5);
-            }
-        } catch (ParseException ex) {
-            Logger.getLogger(RentalProcess.class.getName()).log(Level.SEVERE, null, ex);
-        }        
+        if(tblRented.getSelectedRow() != -1) {
+            String chosenDate = jXDatePicker1.getEditor().getText();
+            String d = df2.format(new Date());
+            try {    
+                Date chosen = df2.parse(chosenDate);
+                Date today = df2.parse(d);
+
+                if (chosen.compareTo(today) <= 0) {
+                    jXDatePicker1.setDate(null);
+                    JOptionPane.showMessageDialog(this, "Invalid date", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+
+                else {           
+                    int[] rows = tblRented.getSelectedRows();
+                    for(int eachRow : rows)
+                        modelRented.setValueAt(chosenDate, eachRow, 5);
+                }
+            } catch (ParseException ex) {
+                Logger.getLogger(RentalProcess.class.getName()).log(Level.SEVERE, null, ex);
+            }    
+        }
+        else {
+            jXDatePicker1.setDate(null);
+            JOptionPane.showMessageDialog(this, "Please select an item");
+        }
     }//GEN-LAST:event_jXDatePicker1ActionPerformed
     
     private void bOKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bOKActionPerformed
@@ -406,28 +401,21 @@ public class RentalProcess extends javax.swing.JFrame {
     }//GEN-LAST:event_bCancelActionPerformed
 
     private void tblItemsFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_tblItemsFocusGained
-        bAdd.setEnabled(true);
-        bRemove.setEnabled(false);
-        jXDatePicker1.setEnabled(false);
-        tblRented.getSelectionModel().clearSelection();
+        
+        tblRented.getSelectionModel().clearSelection();        
     }//GEN-LAST:event_tblItemsFocusGained
 
     private void tblRentedFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_tblRentedFocusGained
-        bAdd.setEnabled(false);
-        bRemove.setEnabled(true);
-        jXDatePicker1.setEnabled(true);
+        
         tblItems.getSelectionModel().clearSelection();
     }//GEN-LAST:event_tblRentedFocusGained
 
     private void tblItemsFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_tblItemsFocusLost
-        bAdd.setEnabled(false);
-        bAdd.setFocusPainted(false);
+        
     }//GEN-LAST:event_tblItemsFocusLost
 
     private void tblRentedFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_tblRentedFocusLost
-        bRemove.setEnabled(false);
-        bRemove.setFocusPainted(false);
-        jXDatePicker1.setEnabled(false);
+        
     }//GEN-LAST:event_tblRentedFocusLost
     
     private void createReceipt(String itemsInfo, int custID, String customerName) {
