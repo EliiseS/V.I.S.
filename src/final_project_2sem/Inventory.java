@@ -975,7 +975,7 @@ public class Inventory extends javax.swing.JFrame {
     private void itemsTableFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_itemsTableFocusLost
         bDeleteItem.setEnabled(false);
         bEditItem.setEnabled(false);
-        itemsTable.getSelectionModel().clearSelection();
+        //itemsTable.getSelectionModel().clearSelection();
     }//GEN-LAST:event_itemsTableFocusLost
 
     private void customersTableFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_customersTableFocusGained
@@ -988,7 +988,7 @@ public class Inventory extends javax.swing.JFrame {
         bDeleteCust.setEnabled(false);
         bEditCust.setEnabled(false);
         bRental.setEnabled(false);
-        customersTable.getSelectionModel().clearSelection();
+        //customersTable.getSelectionModel().clearSelection();
     }//GEN-LAST:event_customersTableFocusLost
 
     private void receiptsTableFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_receiptsTableFocusGained
@@ -997,7 +997,7 @@ public class Inventory extends javax.swing.JFrame {
 
     private void receiptsTableFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_receiptsTableFocusLost
         bDeleteReceipt.setEnabled(false);
-        receiptsTable.getSelectionModel().clearSelection();
+        //receiptsTable.getSelectionModel().clearSelection();
     }//GEN-LAST:event_receiptsTableFocusLost
          
     public static HashMap<Integer, Customer> getCustomerMap() {
