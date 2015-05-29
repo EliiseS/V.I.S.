@@ -1,7 +1,6 @@
 
 package final_project_2sem;
 
-import java.awt.event.ActionEvent;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -364,6 +363,9 @@ public class RentalProcess extends javax.swing.JFrame {
             //REMOVE PROCESS
             removeProcess();
             
+            //Update items catalogue
+            Inventory.updateItemsTable();
+            
             //Update database for receipts
             Date d = new Date();
             date = df.format(d);
@@ -384,16 +386,16 @@ public class RentalProcess extends javax.swing.JFrame {
                     receipt.getLabelDate().setText(date);
                     receipt.getLabelInvoiceNo().setText(Integer.toString(invoiceNo));
                     receipt.setVisible(true);
+                    
+                    Inventory.updateReceiptsTable(); 
                 }
                 else {}                                                                 //If receipt already exists do nothing 
             }
-            else {}                                                                     //If nothing is rented do nothing
+            else {}        
             
-            //Update tables
-            Inventory.updateItemsTable();
-            updateAvailableItemsTable();
-            updateRentedItemsTable(c);
-            Inventory.updateReceiptsTable(); 
+            //updateAvailableItemsTable();
+            //updateRentedItemsTable(c);
+            
             
             this.dispose();
         }
@@ -469,7 +471,6 @@ public class RentalProcess extends javax.swing.JFrame {
         for(int i = 0; i < rows; i++) {
             //link custID to each item selected - foreign key in database   
             try {
-
                 item = rentedItemsMap.get(i);
                 int itemID = item.getId();
                 

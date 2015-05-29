@@ -46,12 +46,13 @@ public class ReceiptGenerator extends javax.swing.JFrame implements Printable {
         jLabel12 = new javax.swing.JLabel();
         labelInvoiceNo = new javax.swing.JLabel();
         labelCust = new javax.swing.JLabel();
-        areaItems = new javax.swing.JLabel();
         jSeparator2 = new javax.swing.JSeparator();
         bPrint = new javax.swing.JButton();
         bOK = new javax.swing.JButton();
         jPanel5 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        areaItems = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Receipt");
@@ -100,8 +101,6 @@ public class ReceiptGenerator extends javax.swing.JFrame implements Printable {
 
         labelCust.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
 
-        areaItems.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
-
         bPrint.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
         bPrint.setText("Print");
         bPrint.addActionListener(new java.awt.event.ActionListener() {
@@ -137,6 +136,9 @@ public class ReceiptGenerator extends javax.swing.JFrame implements Printable {
             .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING)
         );
 
+        areaItems.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
+        jScrollPane1.setViewportView(areaItems);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -165,17 +167,17 @@ public class ReceiptGenerator extends javax.swing.JFrame implements Printable {
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                 .addComponent(jLabel7)
                                 .addGap(76, 76, 76))))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
                                 .addGap(0, 0, Short.MAX_VALUE)
                                 .addComponent(bOK)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(bPrint))
-                            .addComponent(areaItems, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jSeparator2)
-                            .addComponent(jSeparator1)
-                            .addGroup(layout.createSequentialGroup()
+                            .addComponent(jSeparator2, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                                         .addComponent(jLabel8)
@@ -183,7 +185,7 @@ public class ReceiptGenerator extends javax.swing.JFrame implements Printable {
                                         .addComponent(labelCust, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE))
                                     .addComponent(jLabel9, javax.swing.GroupLayout.Alignment.LEADING))
                                 .addGap(0, 69, Short.MAX_VALUE))
-                            .addGroup(layout.createSequentialGroup()
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                                 .addComponent(jLabel10)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(labelInvoiceNo, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -191,7 +193,7 @@ public class ReceiptGenerator extends javax.swing.JFrame implements Printable {
                                 .addComponent(jLabel12)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(labelDate, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addComponent(jPanel5, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addContainerGap())))
         );
         layout.setVerticalGroup(
@@ -230,8 +232,8 @@ public class ReceiptGenerator extends javax.swing.JFrame implements Printable {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel9)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(areaItems, javax.swing.GroupLayout.PREFERRED_SIZE, 301, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 32, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 156, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(bPrint)
                     .addComponent(bOK))
@@ -242,7 +244,7 @@ public class ReceiptGenerator extends javax.swing.JFrame implements Printable {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-/////////////////////////////////////NEW////////////////////////////////////////
+
     @Override
     public int print(Graphics g, PageFormat pf, int page) throws PrinterException {
         if (page > 0) { /* We have only one page, and 'page' is zero-based */
@@ -255,8 +257,7 @@ public class ReceiptGenerator extends javax.swing.JFrame implements Printable {
         Graphics2D g2d = (Graphics2D)g;
         g2d.translate(pf.getImageableX(), pf.getImageableY());
 
-        // Print the entire visible contents of a
-        // java.awt.Frame.
+        // Print the entire visible contents of a jFrame.
         
         bOK.setVisible(false);
         bPrint.setVisible(false);
@@ -269,7 +270,7 @@ public class ReceiptGenerator extends javax.swing.JFrame implements Printable {
         /* tell the caller that this page is part of the printed document */
         return PAGE_EXISTS;
     } 
-/////////////////////////////////////NEW////////////////////////////////////////
+
     private void bPrintActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bPrintActionPerformed
         PrinterJob job = PrinterJob.getPrinterJob();
         job.setPrintable(this);
@@ -355,11 +356,8 @@ public class ReceiptGenerator extends javax.swing.JFrame implements Printable {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel3;
-    private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JLabel labelCust;

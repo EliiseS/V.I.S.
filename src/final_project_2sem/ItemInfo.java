@@ -306,8 +306,6 @@ public class ItemInfo extends javax.swing.JFrame {
                         pstmt.setString(5, price);
                         pstmt.execute();
 
-                        //Clean all fields
-                        cleanItemFields();
                         //Update items Catalogue
                         Inventory.updateItemsTable();
                         JOptionPane.showMessageDialog(this, "Item created");
