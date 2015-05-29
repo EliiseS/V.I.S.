@@ -185,7 +185,7 @@
                 </Property>
               </Properties>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="tfFindItem.getDocument().addDocumentListener(new DocumentListener(){&#xa;    @Override&#xa;    public void insertUpdate(DocumentEvent e) {&#xa;        filter();&#xa;    }&#xa;&#xa;    @Override&#xa;    public void removeUpdate(DocumentEvent e) {&#xa;        filter();&#xa;    }&#xa;&#xa;    @Override&#xa;    public void changedUpdate(DocumentEvent e) {&#xa;        throw new UnsupportedOperationException(&quot;Not supported yet.&quot;); //To change body of generated methods, choose Tools | Templates.&#xa;    }&#xa;&#xa;});"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="tfFindItem.getDocument().addDocumentListener(new DocumentListener(){&#xa;    @Override&#xa;    public void insertUpdate(DocumentEvent e) {&#xa;        filterItems();&#xa;    }&#xa;&#xa;    @Override&#xa;    public void removeUpdate(DocumentEvent e) {&#xa;        filterItems();&#xa;    }&#xa;&#xa;    @Override&#xa;    public void changedUpdate(DocumentEvent e) {&#xa;        throw new UnsupportedOperationException(&quot;Not supported yet.&quot;); //To change body of generated methods, choose Tools | Templates.&#xa;    }&#xa;&#xa;});"/>
               </AuxValues>
             </Component>
             <Component class="javax.swing.JLabel" name="searchImage2">
@@ -263,7 +263,7 @@
                 </Property>
               </Properties>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="tfFindItem.getDocument().addDocumentListener(new DocumentListener(){&#xa;    @Override&#xa;    public void insertUpdate(DocumentEvent e) {&#xa;        filter();&#xa;    }&#xa;&#xa;    @Override&#xa;    public void removeUpdate(DocumentEvent e) {&#xa;        filter();&#xa;    }&#xa;&#xa;    @Override&#xa;    public void changedUpdate(DocumentEvent e) {&#xa;        throw new UnsupportedOperationException(&quot;Not supported yet.&quot;); &#xa;    }&#xa;});"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="tfFindCust.getDocument().addDocumentListener(new DocumentListener(){&#xa;    @Override&#xa;    public void insertUpdate(DocumentEvent e) {&#xa;        filterCustomers();&#xa;    }&#xa;&#xa;    @Override&#xa;    public void removeUpdate(DocumentEvent e) {&#xa;        filterCustomers();&#xa;    }&#xa;&#xa;    @Override&#xa;    public void changedUpdate(DocumentEvent e) {&#xa;        throw new UnsupportedOperationException(&quot;Not supported yet.&quot;); &#xa;    }&#xa;});"/>
               </AuxValues>
             </Component>
             <Container class="javax.swing.JScrollPane" name="jScrollPane4">

@@ -12,7 +12,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.RowFilter;
-import javax.swing.UIManager;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
@@ -155,12 +154,12 @@ public class Inventory extends javax.swing.JFrame {
         tfFindItem.getDocument().addDocumentListener(new DocumentListener(){
             @Override
             public void insertUpdate(DocumentEvent e) {
-                filter();
+                filterItems();
             }
 
             @Override
             public void removeUpdate(DocumentEvent e) {
-                filter();
+                filterItems();
             }
 
             @Override
@@ -217,15 +216,15 @@ public class Inventory extends javax.swing.JFrame {
         jTabbedPane1.addTab("  Items Catalogue  ", itemsPanel);
 
         tfFindCust.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
-        tfFindItem.getDocument().addDocumentListener(new DocumentListener(){
+        tfFindCust.getDocument().addDocumentListener(new DocumentListener(){
             @Override
             public void insertUpdate(DocumentEvent e) {
-                filter();
+                filterCustomers();
             }
 
             @Override
             public void removeUpdate(DocumentEvent e) {
-                filter();
+                filterCustomers();
             }
 
             @Override
@@ -448,12 +447,21 @@ public class Inventory extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
     
-    private void filter() {
+    private void filterItems() {
         String text = tfFindItem.getText();
         if (text.trim().length() == 0) { //trim() returns a copy of the string, with leading and trailing whitespace omitted.
             rowSorter.setRowFilter(null);
         } else {
             rowSorter.setRowFilter(RowFilter.regexFilter("(?i)" + text.trim()));
+        }
+    }
+    
+    private void filterCustomers() {
+        String text = tfFindCust.getText();
+        if (text.trim().length() == 0) { //trim() returns a copy of the string, with leading and trailing whitespace omitted.
+            rowSorter2.setRowFilter(null);
+        } else {
+            rowSorter2.setRowFilter(RowFilter.regexFilter("(?i)" + text.trim()));
         }
     }
     

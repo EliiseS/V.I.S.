@@ -203,10 +203,6 @@ public class CustomerInfo extends javax.swing.JFrame {
                     pstmt.setString(5, email);
                     pstmt.execute();
 
-                    //Clean all fields
-                    cleanCustFields();
-                    //Update items Catalogue
-                    Inventory.updateCustomersTable();
                     JOptionPane.showMessageDialog(this, "Customer created");
 
                     this.dispose();
@@ -229,10 +225,7 @@ public class CustomerInfo extends javax.swing.JFrame {
                     pstmt.setString(5, email);
                     pstmt.setInt(6, cust.getId());
                     pstmt.execute();
-
                     
-                    //Update items Catalogue
-                    Inventory.updateCustomersTable();
                     JOptionPane.showMessageDialog(this, "Customer's information saved");
 
                     this.dispose();            
@@ -242,6 +235,8 @@ public class CustomerInfo extends javax.swing.JFrame {
                 }
             }
         }
+        //Update items Catalogue
+        Inventory.updateCustomersTable();
     }//GEN-LAST:event_bSaveCustActionPerformed
 
     private void formWindowGainedFocus(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowGainedFocus
