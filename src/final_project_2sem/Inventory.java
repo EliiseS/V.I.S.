@@ -26,26 +26,33 @@ public class Inventory extends javax.swing.JFrame {
     private static Connection conn;
     private TableRowSorter<TableModel> rowSorter; 
     private TableRowSorter<TableModel> rowSorter2;
-    private static HashMap<Integer, Customer> customersMap;
+    private TableRowSorter<TableModel> rowSorter3;
     private static HashMap<Integer, Item> itemsMap;
-    private static DefaultTableModel receiptsTableModel;
+    private static DefaultTableModel itemsTableModel; 
+    private static DefaultTableModel customersTableModel; 
+    private static DefaultTableModel receiptsTableModel;    
     
     private Inventory() {
         initComponents();
         conn = DBConnector.getConnection();
-        customersMap = new HashMap<>(); 
         itemsMap = new HashMap<>();
         updateItemsTable();   
         updateCustomersTable();
         updateReceiptsTable();
+        
         rowSorter = new TableRowSorter<>(itemsTable.getModel());
         itemsTable.setRowSorter(rowSorter);
         rowSorter2 = new TableRowSorter<>(customersTable.getModel());
         customersTable.setRowSorter(rowSorter2);
-        PromptSupport.init("Search", Color.GRAY, Color.WHITE,tfFindCust);
-        BuddySupport.addLeft(searchImage2, tfFindCust);
-        PromptSupport.init("Search", Color.GRAY, Color.WHITE,tfFindItem);
-        BuddySupport.addLeft(searchImage1, tfFindItem);
+        rowSorter3 = new TableRowSorter<>(receiptsTable.getModel());
+        receiptsTable.setRowSorter(rowSorter3);
+        
+        PromptSupport.init("Search", Color.GRAY, Color.WHITE,tfFilterCust);
+        BuddySupport.addLeft(searchIcon2, tfFilterCust);
+        PromptSupport.init("Search", Color.GRAY, Color.WHITE,tfFilterItem);
+        BuddySupport.addLeft(searchIcon1, tfFilterItem);
+        PromptSupport.init("Search", Color.GRAY, Color.WHITE,tfFilterReceipts);
+        BuddySupport.addLeft(searchIcon3, tfFilterReceipts);
     }
     
     public static synchronized Inventory getInventory() {
@@ -71,10 +78,10 @@ public class Inventory extends javax.swing.JFrame {
                 return false;
             }
         };
-        tfFindItem = new javax.swing.JTextField();
-        searchImage2 = new javax.swing.JLabel();
+        tfFilterItem = new javax.swing.JTextField();
+        searchIcon2 = new javax.swing.JLabel();
         customersPanel = new javax.swing.JPanel();
-        tfFindCust = new javax.swing.JTextField();
+        tfFilterCust = new javax.swing.JTextField();
         jScrollPane4 = new javax.swing.JScrollPane();
         customersTable = new javax.swing.JTable(){
             @Override
@@ -86,7 +93,7 @@ public class Inventory extends javax.swing.JFrame {
         bEditCust = new javax.swing.JButton();
         bCreateCust = new javax.swing.JButton();
         bRental = new javax.swing.JButton();
-        searchImage1 = new javax.swing.JLabel();
+        searchIcon1 = new javax.swing.JLabel();
         receiptsPanel = new javax.swing.JPanel();
         jScrollPane5 = new javax.swing.JScrollPane();
         receiptsTable = new javax.swing.JTable(){
@@ -96,6 +103,8 @@ public class Inventory extends javax.swing.JFrame {
             }
         };
         bDeleteReceipt = new javax.swing.JButton();
+        tfFilterReceipts = new javax.swing.JTextField();
+        searchIcon3 = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
         bChangePass = new javax.swing.JButton();
         bLogOut = new javax.swing.JButton();
@@ -132,17 +141,7 @@ public class Inventory extends javax.swing.JFrame {
 
         itemsTable.setAutoCreateRowSorter(true);
         itemsTable.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
-        itemsTable.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
-            }
-        ));
+        itemsTable.getTableHeader().setReorderingAllowed(false);
         itemsTable.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 itemsTableMousePressed(evt);
@@ -150,8 +149,8 @@ public class Inventory extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(itemsTable);
 
-        tfFindItem.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
-        tfFindItem.getDocument().addDocumentListener(new DocumentListener(){
+        tfFilterItem.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
+        tfFilterItem.getDocument().addDocumentListener(new DocumentListener(){
             @Override
             public void insertUpdate(DocumentEvent e) {
                 filterItems();
@@ -169,7 +168,7 @@ public class Inventory extends javax.swing.JFrame {
 
         });
 
-        searchImage2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/final_project_2sem/Search-icon.png"))); // NOI18N
+        searchIcon2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/final_project_2sem/Search-icon.png"))); // NOI18N
 
         javax.swing.GroupLayout itemsPanelLayout = new javax.swing.GroupLayout(itemsPanel);
         itemsPanel.setLayout(itemsPanelLayout);
@@ -188,9 +187,9 @@ public class Inventory extends javax.swing.JFrame {
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, itemsPanelLayout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(searchImage2)
+                        .addComponent(searchIcon2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(tfFindItem, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(tfFilterItem, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
 
@@ -201,8 +200,8 @@ public class Inventory extends javax.swing.JFrame {
             .addGroup(itemsPanelLayout.createSequentialGroup()
                 .addGap(15, 15, 15)
                 .addGroup(itemsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(searchImage2)
-                    .addComponent(tfFindItem, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(searchIcon2)
+                    .addComponent(tfFilterItem, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(7, 7, 7)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 266, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -215,8 +214,8 @@ public class Inventory extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("  Items Catalogue  ", itemsPanel);
 
-        tfFindCust.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
-        tfFindCust.getDocument().addDocumentListener(new DocumentListener(){
+        tfFilterCust.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
+        tfFilterCust.getDocument().addDocumentListener(new DocumentListener(){
             @Override
             public void insertUpdate(DocumentEvent e) {
                 filterCustomers();
@@ -234,17 +233,12 @@ public class Inventory extends javax.swing.JFrame {
         });
 
         customersTable.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
-        customersTable.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+        customersTable.getTableHeader().setReorderingAllowed(false);
+        customersTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                customersTableMousePressed(evt);
             }
-        ));
+        });
         jScrollPane4.setViewportView(customersTable);
 
         bDeleteCust.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
@@ -279,7 +273,7 @@ public class Inventory extends javax.swing.JFrame {
             }
         });
 
-        searchImage1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/final_project_2sem/Search-icon.png"))); // NOI18N
+        searchIcon1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/final_project_2sem/Search-icon.png"))); // NOI18N
 
         javax.swing.GroupLayout customersPanelLayout = new javax.swing.GroupLayout(customersPanel);
         customersPanel.setLayout(customersPanelLayout);
@@ -291,9 +285,9 @@ public class Inventory extends javax.swing.JFrame {
                     .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 621, Short.MAX_VALUE)
                     .addGroup(customersPanelLayout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(searchImage1)
+                        .addComponent(searchIcon1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(tfFindCust, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(tfFilterCust, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(customersPanelLayout.createSequentialGroup()
                         .addComponent(bCreateCust)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -312,8 +306,8 @@ public class Inventory extends javax.swing.JFrame {
             .addGroup(customersPanelLayout.createSequentialGroup()
                 .addGap(15, 15, 15)
                 .addGroup(customersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(tfFindCust, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(searchImage1))
+                    .addComponent(tfFilterCust, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(searchIcon1))
                 .addGap(7, 7, 7)
                 .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 266, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -328,17 +322,7 @@ public class Inventory extends javax.swing.JFrame {
         jTabbedPane1.addTab("  Customers List  ", customersPanel);
 
         receiptsTable.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
-        receiptsTable.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
-            }
-        ));
+        receiptsTable.getTableHeader().setReorderingAllowed(false);
         receiptsTable.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 receiptsTableMousePressed(evt);
@@ -354,6 +338,26 @@ public class Inventory extends javax.swing.JFrame {
             }
         });
 
+        tfFilterReceipts.getDocument().addDocumentListener(new DocumentListener(){
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                filterReceipts();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                filterReceipts();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+        });
+        tfFilterReceipts.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
+
+        searchIcon3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/final_project_2sem/Search-icon.png"))); // NOI18N
+
         javax.swing.GroupLayout receiptsPanelLayout = new javax.swing.GroupLayout(receiptsPanel);
         receiptsPanel.setLayout(receiptsPanelLayout);
         receiptsPanelLayout.setHorizontalGroup(
@@ -364,14 +368,23 @@ public class Inventory extends javax.swing.JFrame {
                     .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 621, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, receiptsPanelLayout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(bDeleteReceipt)))
+                        .addGroup(receiptsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(bDeleteReceipt, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, receiptsPanelLayout.createSequentialGroup()
+                                .addComponent(searchIcon3)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(tfFilterReceipts, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                 .addContainerGap())
         );
         receiptsPanelLayout.setVerticalGroup(
             receiptsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(receiptsPanelLayout.createSequentialGroup()
-                .addGap(42, 42, 42)
-                .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 265, Short.MAX_VALUE)
+                .addGap(16, 16, 16)
+                .addGroup(receiptsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(tfFilterReceipts, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(searchIcon3))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 264, Short.MAX_VALUE)
                 .addGap(8, 8, 8)
                 .addComponent(bDeleteReceipt)
                 .addContainerGap())
@@ -448,8 +461,8 @@ public class Inventory extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
     
     private void filterItems() {
-        String text = tfFindItem.getText();
-        if (text.trim().length() == 0) { //trim() returns a copy of the string, with leading and trailing whitespace omitted.
+        String text = tfFilterItem.getText();
+        if (text.trim().length() == 0) {                                        //trim() returns a copy of the string, with leading and trailing whitespace omitted.
             rowSorter.setRowFilter(null);
         } else {
             rowSorter.setRowFilter(RowFilter.regexFilter("(?i)" + text.trim()));
@@ -457,22 +470,33 @@ public class Inventory extends javax.swing.JFrame {
     }
     
     private void filterCustomers() {
-        String text = tfFindCust.getText();
-        if (text.trim().length() == 0) { //trim() returns a copy of the string, with leading and trailing whitespace omitted.
+        String text = tfFilterCust.getText();
+        if (text.trim().length() == 0) {
             rowSorter2.setRowFilter(null);
         } else {
             rowSorter2.setRowFilter(RowFilter.regexFilter("(?i)" + text.trim()));
         }
     }
     
+    private void filterReceipts() {
+        String text = tfFilterReceipts.getText();
+        if (text.trim().length() == 0) {
+            rowSorter3.setRowFilter(null);
+        } else {
+            rowSorter3.setRowFilter(RowFilter.regexFilter("(?i)" + text.trim()));
+        }
+    }
+    
     public static void updateItemsTable() {                   
         try {
-            String sql = "SELECT SerialNo,Type,Brand,Model,Price,Status,ReturnDate FROM villa_watt_inventory.items;";
+            String sql = "SELECT itemID,SerialNo,Type,Brand,Model,Price,Status,ReturnDate FROM villa_watt_inventory.items;";
             
             PreparedStatement pstmt = conn.prepareStatement(sql);
             ResultSet rs = pstmt.executeQuery();
             
             itemsTable.setModel(DbUtils.resultSetToTableModel(rs));
+            itemsTableModel = (DefaultTableModel) itemsTable.getModel();
+            
             getItems();
         } catch (SQLException ex) {
             Logger.getLogger(Inventory.class.getName()).log(Level.SEVERE, null, ex);
@@ -499,51 +523,28 @@ public class Inventory extends javax.swing.JFrame {
                 itemsArray.add(item);
             }
             int row = itemsTable.getRowCount();
-            for(int i = 0; i < row; i++)                 
-                itemsMap.put(i, itemsArray.get(i));
+            for(int i = 0; i < row; i++) { 
+                int id = itemsArray.get(i).getId();
+                itemsMap.put(id, itemsArray.get(i));
+            }
         } catch (SQLException ex) {
             Logger.getLogger(Inventory.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
     public static void updateCustomersTable() {               
-        try {
-            String sql = "SELECT FirstName,LastName,Address,PhoneNo,Email FROM villa_watt_inventory.customers;";
-            
-            PreparedStatement pstmt = conn.prepareStatement(sql);
-            ResultSet rs = pstmt.executeQuery();            
-                      
-            customersTable.setModel(DbUtils.resultSetToTableModel(rs)); 
-            getCustomers();
-        } catch (SQLException ex) {
-            Logger.getLogger(Inventory.class.getName()).log(Level.SEVERE, null, ex);
-        }             
-    }
-    
-    private static void getCustomers() {
-        try {   
-            ArrayList<Customer> customersArray = new ArrayList<>();
+        try { 
             String sql = "SELECT CustomerID,FirstName,LastName,Address,PhoneNo,Email FROM villa_watt_inventory.customers;";
             
             PreparedStatement pstmt = conn.prepareStatement(sql);
-            ResultSet rs = pstmt.executeQuery(); 
-            while(rs.next()) {
-                int id         = rs.getInt("CustomerID");
-                String fName   = rs.getString("FirstName");
-                String lName   = rs.getString("LastName");
-                String address = rs.getString("Address");
-                String phone   = rs.getString("PhoneNo");
-                String email   = rs.getString("Email");
-                
-                Customer c = new Customer(id,fName,lName,address,phone,email);
-                customersArray.add(c);
-            }
-            int row = customersTable.getRowCount();
-            for(int i = 0; i < row; i++)                 
-                customersMap.put(i, customersArray.get(i));
+            ResultSet rs = pstmt.executeQuery();
+            
+            customersTable.setModel(DbUtils.resultSetToTableModel(rs));
+            customersTableModel = (DefaultTableModel) customersTable.getModel();
+            
         } catch (SQLException ex) {
             Logger.getLogger(Inventory.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        }             
     }
     
     public static void updateReceiptsTable() {                   
@@ -569,11 +570,12 @@ public class Inventory extends javax.swing.JFrame {
         itemI.getLabelCust().setVisible(false);
         itemI.getLabelRent().setVisible(false);
         
-        itemI.getID().setEditable(true);
+        itemI.getSerialNo().setEditable(true);
         itemI.getIType().setEditable(true);
         itemI.getBrand().setEditable(true);
         itemI.getModel().setEditable(true);
         itemI.getPrice().setEditable(true);
+        
         itemI.getbSaveItem().setVisible(true);
         itemI.getbCancelItemInfo().setVisible(true);
         itemI.getbOK().setVisible(false);
@@ -584,24 +586,25 @@ public class Inventory extends javax.swing.JFrame {
         itemI.getErrModel().setVisible(false);
         itemI.getErrPrice().setVisible(false);
         
-        itemI.getItemKey().setText("");     //No key needed if new item
+        itemI.getItemKey().setText("");                                         //No key needed if new item
         
         itemI.setVisible(true);
     }//GEN-LAST:event_bCreateItemActionPerformed
 
     private void bEditItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bEditItemActionPerformed
-        if(itemsTable.getSelectedRow() != -1) {
+        int row = itemsTable.getSelectedRow();
+        if(row != -1) {
             ItemInfo itemI = ItemInfo.getItemI(); 
             getItemInfo(itemI);  
-            itemI.getID().setEditable(true);
+            itemI.getSerialNo().setEditable(true);
             itemI.getIType().setEditable(true);
             itemI.getBrand().setEditable(true);
             itemI.getModel().setEditable(true);
             itemI.getPrice().setEditable(true);
+            
             itemI.getbSaveItem().setVisible(true);
             itemI.getbCancelItemInfo().setVisible(true);
             itemI.getbOK().setVisible(false);
-            itemI.setVisible(true); 
             
             //Error messages invisible
             itemI.getErrType().setVisible(false);
@@ -609,23 +612,25 @@ public class Inventory extends javax.swing.JFrame {
             itemI.getErrModel().setVisible(false);
             itemI.getErrPrice().setVisible(false);
 
-            itemI.getItemKey().setText(Integer.toString(itemsTable.getSelectedRow()));  //the key(row) to recognise the item in the new window
+            itemI.getItemKey().setText(itemsTable.getValueAt(row, 0).toString());  //the key(row) to recognise the item in the new window
             itemI.getItemKey().setVisible(false);
+            
+            itemI.setVisible(true); 
         }
         else
             JOptionPane.showMessageDialog(this, "Please select an item to edit", "Message", JOptionPane.WARNING_MESSAGE);
     }//GEN-LAST:event_bEditItemActionPerformed
     //Get item information to display
     private void getItemInfo(ItemInfo itemI) {
-        itemI.getID().setText(String.valueOf(itemsTable.getValueAt(itemsTable.getSelectedRow(), 0)));
-        itemI.getIType().setText(String.valueOf(itemsTable.getValueAt(itemsTable.getSelectedRow(), 1)));
-        itemI.getBrand().setText(String.valueOf(itemsTable.getValueAt(itemsTable.getSelectedRow(), 2)));
-        itemI.getModel().setText(String.valueOf(itemsTable.getValueAt(itemsTable.getSelectedRow(), 3)));
-        itemI.getPrice().setText(String.valueOf(itemsTable.getValueAt(itemsTable.getSelectedRow(), 4)));
+        itemI.getSerialNo().setText(String.valueOf(itemsTable.getValueAt(itemsTable.getSelectedRow(), 1)));
+        itemI.getIType().setText(String.valueOf(itemsTable.getValueAt(itemsTable.getSelectedRow(), 2)));
+        itemI.getBrand().setText(String.valueOf(itemsTable.getValueAt(itemsTable.getSelectedRow(), 3)));
+        itemI.getModel().setText(String.valueOf(itemsTable.getValueAt(itemsTable.getSelectedRow(), 4)));
+        itemI.getPrice().setText(String.valueOf(itemsTable.getValueAt(itemsTable.getSelectedRow(), 5)));
         
-        String status = String.valueOf(itemsTable.getValueAt(itemsTable.getSelectedRow(), 5));
+        String status = String.valueOf(itemsTable.getValueAt(itemsTable.getSelectedRow(), 6));
         if(status.equals("rented out")) {
-            Item item = itemsMap.get(itemsTable.getSelectedRow());
+            Item item = itemsMap.get(Integer.parseInt(itemsTable.getValueAt(itemsTable.getSelectedRow(), 0).toString()));
             try {
                 String sql = "SELECT FirstName,LastName FROM villa_watt_inventory.customers WHERE CustomerID = ?;";
             
@@ -656,8 +661,7 @@ public class Inventory extends javax.swing.JFrame {
     private void bDeleteItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bDeleteItemActionPerformed
         int row = itemsTable.getSelectedRow();
         if(row != -1) {
-            Item item = itemsMap.get(row);
-            int itemID = item.getId();
+            String itemID = itemsTable.getValueAt(row, 0).toString();
             int choice;
             if(isItemRented(itemID)) 
                 choice = JOptionPane.showConfirmDialog(this, "This item is rented out. Are you sure you want to delete it anyway?", "Delete item", JOptionPane.YES_NO_OPTION);
@@ -667,15 +671,14 @@ public class Inventory extends javax.swing.JFrame {
             if(choice == JOptionPane.YES_OPTION) {
                 try {                    
                     //Update database
-
                     String sql = "DELETE FROM villa_watt_inventory.items WHERE ItemID = ?";
 
                     PreparedStatement pstmt = conn.prepareStatement(sql);
-                    pstmt.setInt(1, itemID);
+                    pstmt.setString(1, itemID);
                     pstmt.execute();                     
 
                     //Update items Catalogue
-                    updateItemsTable();
+                    itemsTableModel.removeRow(row);                                             
                     JOptionPane.showMessageDialog(this, "Item successfully deleted");
 
                 } catch (SQLException ex) {
@@ -687,12 +690,12 @@ public class Inventory extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Please select an item to delete", "Message", JOptionPane.WARNING_MESSAGE);
     }//GEN-LAST:event_bDeleteItemActionPerformed
 
-    private boolean isItemRented(int itemID) {
+    private boolean isItemRented(String itemID) {
         try {
             String sql = "SELECT Status FROM villa_watt_inventory.items WHERE ItemID = ?";
             
             PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.setInt(1, itemID);
+            pstmt.setString(1, itemID);
             ResultSet rs = pstmt.executeQuery(); 
             String status = "";
             while(rs.next())
@@ -715,16 +718,17 @@ public class Inventory extends javax.swing.JFrame {
     }//GEN-LAST:event_bCreateCustActionPerformed
 
     private void bEditCustActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bEditCustActionPerformed
-        if(customersTable.getSelectedRow() != -1) {
+        int row = customersTable.getSelectedRow();
+        if(row != -1) {
             CustomerInfo custI = CustomerInfo.getCustI();        
 
-            custI.getFirstName().setText(String.valueOf(customersTable.getValueAt(customersTable.getSelectedRow(), 0)));
-            custI.getLastName().setText(String.valueOf(customersTable.getValueAt(customersTable.getSelectedRow(), 1)));
-            custI.getAddress().setText(String.valueOf(customersTable.getValueAt(customersTable.getSelectedRow(), 2)));
-            custI.getPhone().setText(String.valueOf(customersTable.getValueAt(customersTable.getSelectedRow(), 3)));
-            custI.getEmail().setText(String.valueOf(customersTable.getValueAt(customersTable.getSelectedRow(), 4)));
+            custI.getFirstName().setText(String.valueOf(customersTable.getValueAt(customersTable.getSelectedRow(), 1)));
+            custI.getLastName().setText(String.valueOf(customersTable.getValueAt(customersTable.getSelectedRow(), 2)));
+            custI.getAddress().setText(String.valueOf(customersTable.getValueAt(customersTable.getSelectedRow(), 3)));
+            custI.getPhone().setText(String.valueOf(customersTable.getValueAt(customersTable.getSelectedRow(), 4)));
+            custI.getEmail().setText(String.valueOf(customersTable.getValueAt(customersTable.getSelectedRow(), 5)));
 
-            custI.getCustKey().setText(Integer.toString(customersTable.getSelectedRow()));
+            custI.getCustKey().setText(customersTable.getValueAt(row, 0).toString());
             custI.getCustKey().setVisible(false);
 
             custI.setVisible(true);    
@@ -734,17 +738,16 @@ public class Inventory extends javax.swing.JFrame {
     }//GEN-LAST:event_bEditCustActionPerformed
 
     private void bDeleteCustActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bDeleteCustActionPerformed
-        if(customersTable.getSelectedRow() != -1) {
-            int key = customersTable.getSelectedRow();
-            Customer c = customersMap.get(key);
-            int custID = c.getId();
+        int row = customersTable.getSelectedRow();
+        if(row != -1) {
+            String custID = customersTable.getValueAt(row, 0).toString();
 
             ArrayList<Integer> listRentedItems = checkRentedItems(custID);
             int choice;
-            if(listRentedItems.isEmpty()) {//No item is rented by this customer
+            if(listRentedItems.isEmpty()) {                                     //No item is rented by this customer
                 choice = JOptionPane.showConfirmDialog(this, "Do you really want to delete this customer?", "Delete customer", JOptionPane.YES_NO_OPTION);
                 if(choice == JOptionPane.YES_OPTION)
-                    deleteCustomer(custID);
+                    deleteCustomer(row, custID);
             }
             else {
                 choice = JOptionPane.showConfirmDialog(this, "This customer has items rented out. Are you sure you want to delete it anyway?", "Delete customer", JOptionPane.YES_NO_OPTION);
@@ -759,7 +762,7 @@ public class Inventory extends javax.swing.JFrame {
                     } catch (SQLException ex) {                
                         Logger.getLogger(CustomerInfo.class.getName()).log(Level.SEVERE, null, ex);
                     }                
-                    deleteCustomer(custID);
+                    deleteCustomer(row, custID);
                 }
             }
             updateItemsTable();
@@ -768,13 +771,13 @@ public class Inventory extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Please select a customer to delete", "Message", JOptionPane.WARNING_MESSAGE);
     }//GEN-LAST:event_bDeleteCustActionPerformed
     
-    private ArrayList<Integer> checkRentedItems(int custID) {
+    private ArrayList<Integer> checkRentedItems(String custID) {
         ArrayList<Integer> listRentedItems = new ArrayList<>();
         try {
             String sql = "SELECT ItemID FROM villa_watt_inventory.items WHERE fk_custID = ?";
             
             PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.setInt(1, custID);
+            pstmt.setString(1, custID);
             ResultSet rs = pstmt.executeQuery(); 
             
             while(rs.next()) {
@@ -787,17 +790,18 @@ public class Inventory extends javax.swing.JFrame {
         return listRentedItems;
     }
     
-    private void deleteCustomer(int id) {
+    private void deleteCustomer(int row, String id) {
         try {                    
             //Update database
             String sql = "DELETE FROM villa_watt_inventory.customers WHERE CustomerID = ?";
 
             PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.setInt(1, id);
+            pstmt.setString(1, id);
             pstmt.execute();    
 
             //Update customer list
-            updateCustomersTable(); 
+            System.out.println(row);
+            customersTableModel.removeRow(row);                                             
             JOptionPane.showMessageDialog(this, "Customer successfully deleted");
 
         } catch (SQLException ex) {
@@ -811,7 +815,7 @@ public class Inventory extends javax.swing.JFrame {
             getItemInfo(itemI);
             
             //Not editable fields
-            itemI.getID().setEditable(false);
+            itemI.getSerialNo().setEditable(false);
             itemI.getIType().setEditable(false);
             itemI.getBrand().setEditable(false);
             itemI.getModel().setEditable(false);
@@ -837,25 +841,8 @@ public class Inventory extends javax.swing.JFrame {
     }//GEN-LAST:event_itemsTableMousePressed
 
     private void bRentalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bRentalActionPerformed
-        if(customersTable.getSelectedRow() != -1) {
-            int row = customersTable.getSelectedRow();
-            Customer c = customersMap.get(row);
-            RentalProcess rent = RentalProcess.getRentalProcess();
-
-            //Update tables in rent frame
-            rent.updateAvailableItemsTable();
-            rent.updateRentedItemsTable(c);
-            rent.getAvailableItems();
-            rent.getRentedItems(c);
-
-            //Display customer's name
-            rent.getCustName().setText(c.getFirstName()+" "+c.getLastName());  
-
-            //Put in the new frame the key(row) to retrieve the customer from HashMap
-            rent.getCustKey().setText(Integer.toString(row));
-            rent.getCustKey().setVisible(false);
-            
-            rent.setVisible(true); 
+        if(customersTable.getSelectedRow() != -1) {  
+            rent();
         }
         else
             JOptionPane.showMessageDialog(this, "Please select a customer first", "Message", JOptionPane.WARNING_MESSAGE);
@@ -941,10 +928,34 @@ public class Inventory extends javax.swing.JFrame {
         
         pass.setVisible(true);
     }//GEN-LAST:event_bChangePassActionPerformed
-         
-    public static HashMap<Integer, Customer> getCustomerMap() {
-        return customersMap;
+
+    private void customersTableMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_customersTableMousePressed
+        if(evt.getClickCount() == 2)
+            rent();        
+    }//GEN-LAST:event_customersTableMousePressed
+    
+    private void rent() {
+        int row = customersTable.getSelectedRow();
+        String custID = customersTable.getValueAt(row, 0).toString();
+            RentalProcess rent = RentalProcess.getRentalProcess();
+
+            //Update tables in rent frame
+            rent.updateAvailableItemsTable();
+            rent.updateRentedItemsTable(custID);
+            rent.enableSorting();
+
+            //Display customer's name
+            rent.getCustName().setText(customersTable.getValueAt(row, 1)+" "+customersTable.getValueAt(row, 2));  
+
+            //Put in the new frame the key(row) to retrieve the customer from HashMap
+            rent.getCustKey().setText(custID);
+            rent.getCustKey().setVisible(false);
+            
+            rent.setVisible(true); 
     }
+    /*public static HashMap<Integer, Customer> getCustomerMap() {
+        return customersMap;
+    }*/
 
     public static HashMap<Integer, Item> getItemsMap() {
         return itemsMap;
@@ -1007,9 +1018,11 @@ public class Inventory extends javax.swing.JFrame {
     private javax.swing.JLabel logo;
     private javax.swing.JPanel receiptsPanel;
     private static javax.swing.JTable receiptsTable;
-    private javax.swing.JLabel searchImage1;
-    private javax.swing.JLabel searchImage2;
-    private javax.swing.JTextField tfFindCust;
-    private javax.swing.JTextField tfFindItem;
+    private javax.swing.JLabel searchIcon1;
+    private javax.swing.JLabel searchIcon2;
+    private javax.swing.JLabel searchIcon3;
+    private javax.swing.JTextField tfFilterCust;
+    private javax.swing.JTextField tfFilterItem;
+    private javax.swing.JTextField tfFilterReceipts;
     // End of variables declaration//GEN-END:variables
 }

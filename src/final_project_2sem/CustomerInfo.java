@@ -129,7 +129,7 @@ public class CustomerInfo extends javax.swing.JFrame {
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                     .addComponent(tfFirstName, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(tfLastName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 20, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(custKey, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -150,27 +150,27 @@ public class CustomerInfo extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(custKey, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(18, 18, 18)
+                .addGap(35, 35, 35)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
                     .addComponent(tfLastName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(17, 17, 17)
+                .addGap(35, 35, 35)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
                     .addComponent(tfAddress, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
+                .addGap(35, 35, 35)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
                     .addComponent(tfPhone, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
+                .addGap(35, 35, 35)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
                     .addComponent(tfEmail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
+                .addGap(40, 40, 40)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(bSaveCust)
                     .addComponent(bCancelCustInfo))
-                .addContainerGap(46, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -203,6 +203,8 @@ public class CustomerInfo extends javax.swing.JFrame {
                     pstmt.setString(5, email);
                     pstmt.execute();
 
+                    //Update items Catalogue
+                    Inventory.updateCustomersTable();
                     JOptionPane.showMessageDialog(this, "Customer created");
 
                     this.dispose();
@@ -212,9 +214,6 @@ public class CustomerInfo extends javax.swing.JFrame {
             }
             else {
                 try { 
-                    int key = Integer.parseInt(custKey.getText());
-                    Customer cust = Inventory.getCustomerMap().get(key);
-
                     String sql = "UPDATE villa_watt_inventory.customers SET FirstName = ?,LastName = ?,Address = ?,PhoneNo = ?,Email = ? WHERE CustomerID = ?;";
 
                     PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -223,9 +222,11 @@ public class CustomerInfo extends javax.swing.JFrame {
                     pstmt.setString(3, address);
                     pstmt.setString(4, phone);
                     pstmt.setString(5, email);
-                    pstmt.setInt(6, cust.getId());
+                    pstmt.setString(6, custKey.getText());
                     pstmt.execute();
                     
+                    //Update items Catalogue
+                    Inventory.updateCustomersTable();
                     JOptionPane.showMessageDialog(this, "Customer's information saved");
 
                     this.dispose();            
@@ -235,8 +236,6 @@ public class CustomerInfo extends javax.swing.JFrame {
                 }
             }
         }
-        //Update items Catalogue
-        Inventory.updateCustomersTable();
     }//GEN-LAST:event_bSaveCustActionPerformed
 
     private void formWindowGainedFocus(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowGainedFocus
@@ -259,6 +258,7 @@ public class CustomerInfo extends javax.swing.JFrame {
         try {
             int i = Integer.parseInt(tfPhone.getText());
         }catch(Exception e) {
+            tfPhone.setText("");
             JOptionPane.showMessageDialog(this, "Invalid phone nr.", "Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }

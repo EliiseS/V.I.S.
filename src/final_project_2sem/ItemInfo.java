@@ -316,8 +316,8 @@ public class ItemInfo extends javax.swing.JFrame {
                         Logger.getLogger(ItemInfo.class.getName()).log(Level.SEVERE, null, ex);
                     }            
                 }else {
-                    int key = Integer.parseInt(itemKey.getText());
-                    Item item = Inventory.getItemsMap().get(key);
+                    /*int key = Integer.parseInt(itemKey.getText());
+                    Item item = Inventory.getItemsMap().get(key);*/
                     
                     try { 
                         String sql = "UPDATE villa_watt_inventory.items SET Type = ?,Brand = ?,Model = ?,Price = ? WHERE ItemID = ?;";
@@ -327,7 +327,7 @@ public class ItemInfo extends javax.swing.JFrame {
                         pstmt.setString(2, brand);
                         pstmt.setString(3, model);
                         pstmt.setString(4, price);
-                        pstmt.setInt(5, item.getId());
+                        pstmt.setString(5, itemKey.getText());
                         pstmt.execute();
 
                         //Update items Catalogue
@@ -386,7 +386,7 @@ public class ItemInfo extends javax.swing.JFrame {
         return true;
     }
     
-    public JTextField getID() {
+    public JTextField getSerialNo() {
         return tfSerialNo;
     }
     

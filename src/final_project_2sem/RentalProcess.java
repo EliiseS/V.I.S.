@@ -1,6 +1,7 @@
 
 package final_project_2sem;
 
+import java.awt.Color;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -9,44 +10,41 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.RowFilter;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 import net.proteanit.sql.DbUtils;
 import org.jdesktop.swingx.JXDatePicker;
+import org.jdesktop.swingx.prompt.BuddySupport;
+import org.jdesktop.swingx.prompt.PromptSupport;
 
 public class RentalProcess extends javax.swing.JFrame {
     private static RentalProcess l;    
-    private static Customer c;
     private static Connection conn;
     private DefaultTableModel modelRented;
     private DefaultTableModel modelItems; 
     private String date;
     private SimpleDateFormat df;
     private SimpleDateFormat df2;
-    private HashMap<Integer,Item> availableItemsMap; //??
-    private HashMap<Integer,Item> rentedItemsMap;
-    private ArrayList<Item> availableItemsArray;
-    private ArrayList<Item> rentedItemsArray;
-    //private TableRowSorter<TableModel> rowSorter;
+    private TableRowSorter<TableModel> rowSorter;
     
     
     private RentalProcess() {
         initComponents();
         conn = DBConnector.getConnection();   
-        df = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        df = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");   
         df2 = new SimpleDateFormat("dd-MM-yyyy");
-        jXDatePicker1.setFormats(df2);
-        availableItemsMap = new HashMap<>();
-        rentedItemsMap = new HashMap<>();
-        availableItemsArray = new ArrayList<>();
-        rentedItemsArray = new ArrayList<>();
         
-        //rowSorter = new TableRowSorter<>(tblItems.getModel());
+        PromptSupport.init("Search", Color.GRAY, Color.WHITE,tfFilterAvItems);
+        BuddySupport.addLeft(searchIcon, tfFilterAvItems);
     }
     
     public static synchronized RentalProcess getRentalProcess() {
@@ -64,14 +62,14 @@ public class RentalProcess extends javax.swing.JFrame {
         jXDatePicker1 = new org.jdesktop.swingx.JXDatePicker();
         jLabel3 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        tblItems = new javax.swing.JTable(){
+        AvItemsTable = new javax.swing.JTable(){
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
         };
         jScrollPane3 = new javax.swing.JScrollPane();
-        tblRented = new javax.swing.JTable(){
+        rentedItemsTable = new javax.swing.JTable(){
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
@@ -85,6 +83,8 @@ public class RentalProcess extends javax.swing.JFrame {
         jSeparator1 = new javax.swing.JSeparator();
         custKey = new javax.swing.JLabel();
         bCancel = new javax.swing.JButton();
+        tfFilterAvItems = new javax.swing.JTextField();
+        searchIcon = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Rentals Overview");
@@ -95,7 +95,7 @@ public class RentalProcess extends javax.swing.JFrame {
         jLabel2.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         jLabel2.setText("ITEMS AVAILABLE");
 
-        jXDatePicker1.setFormats(new String[] {"yyyy-MM-dd"});
+        jXDatePicker1.setFormats(new String[] {"dd-MM-yyyy"});
         jXDatePicker1.setToolTipText("Select the item first");
         jXDatePicker1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -106,37 +106,33 @@ public class RentalProcess extends javax.swing.JFrame {
         jLabel3.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
         jLabel3.setText("Expected return date");
 
-        tblItems.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
-        tblItems.addFocusListener(new java.awt.event.FocusAdapter() {
+        AvItemsTable.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
+        AvItemsTable.getTableHeader().setReorderingAllowed(false);
+        AvItemsTable.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
-                tblItemsFocusGained(evt);
-            }
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                tblItemsFocusLost(evt);
+                AvItemsTableFocusGained(evt);
             }
         });
-        tblItems.addMouseListener(new java.awt.event.MouseAdapter() {
+        AvItemsTable.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
-                tblItemsMousePressed(evt);
+                AvItemsTableMousePressed(evt);
             }
         });
-        jScrollPane2.setViewportView(tblItems);
+        jScrollPane2.setViewportView(AvItemsTable);
 
-        tblRented.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
-        tblRented.addFocusListener(new java.awt.event.FocusAdapter() {
+        rentedItemsTable.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
+        rentedItemsTable.getTableHeader().setReorderingAllowed(false);
+        rentedItemsTable.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
-                tblRentedFocusGained(evt);
-            }
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                tblRentedFocusLost(evt);
+                rentedItemsTableFocusGained(evt);
             }
         });
-        tblRented.addMouseListener(new java.awt.event.MouseAdapter() {
+        rentedItemsTable.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
-                tblRentedMousePressed(evt);
+                rentedItemsTableMousePressed(evt);
             }
         });
-        jScrollPane3.setViewportView(tblRented);
+        jScrollPane3.setViewportView(rentedItemsTable);
 
         bRemove.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
         bRemove.setText("Remove");
@@ -176,6 +172,27 @@ public class RentalProcess extends javax.swing.JFrame {
             }
         });
 
+        tfFilterAvItems.getDocument().addDocumentListener(new DocumentListener(){
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                filterAvItems();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                filterAvItems();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+        });
+        tfFilterAvItems.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
+
+        searchIcon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/final_project_2sem/Search-icon.png"))); // NOI18N
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -207,9 +224,14 @@ public class RentalProcess extends javax.swing.JFrame {
                                 .addComponent(custName, javax.swing.GroupLayout.PREFERRED_SIZE, 341, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(17, 17, 17)
                                 .addComponent(custKey, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jLabel2)
                             .addComponent(jLabel1))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(searchIcon)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(tfFilterAvItems, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
 
@@ -223,8 +245,12 @@ public class RentalProcess extends javax.swing.JFrame {
                     .addComponent(custKey, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(custName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(23, 23, 23)
-                .addComponent(jLabel2)
+                .addGap(19, 19, 19)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel2)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(tfFilterAvItems, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(searchIcon)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(42, 42, 42)
@@ -237,7 +263,7 @@ public class RentalProcess extends javax.swing.JFrame {
                     .addComponent(bAdd)
                     .addComponent(jLabel3)
                     .addComponent(jXDatePicker1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 75, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 74, Short.MAX_VALUE)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -250,60 +276,62 @@ public class RentalProcess extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void tblItemsMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblItemsMousePressed
+    
+    public void enableSorting() {
+        rowSorter = new TableRowSorter<>(AvItemsTable.getModel());
+        AvItemsTable.setRowSorter(rowSorter);
+    }
+    private void filterAvItems() {
+        String text = tfFilterAvItems.getText();
+        if (text.trim().length() == 0) {                                        //trim() returns a copy of the string, with leading and trailing whitespace omitted.
+            rowSorter.setRowFilter(null);
+        } else {
+            rowSorter.setRowFilter(RowFilter.regexFilter("(?i)" + text.trim()));
+        }
+    }
+    
+    private void AvItemsTableMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_AvItemsTableMousePressed
         if(evt.getClickCount() == 2)
             add();
-    }//GEN-LAST:event_tblItemsMousePressed
+    }//GEN-LAST:event_AvItemsTableMousePressed
 
-    private void tblRentedMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblRentedMousePressed
+    private void rentedItemsTableMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_rentedItemsTableMousePressed
         if(evt.getClickCount() == 2)
             remove();
-    }//GEN-LAST:event_tblRentedMousePressed
+    }//GEN-LAST:event_rentedItemsTableMousePressed
 
     private void bAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bAddActionPerformed
-        if(tblItems.getSelectedRow() != -1)
+        if(AvItemsTable.getSelectedRow() != -1)
             add();
         else
             JOptionPane.showMessageDialog(this, "Please select an item to rent out");
     }//GEN-LAST:event_bAddActionPerformed
     
     private void add() {
-        int row = tblItems.getSelectedRow();
-        
-        //Edit Arrays
-        Item item = availableItemsArray.remove(row);        
-        rentedItemsArray.add(item);
+        int row = AvItemsTable.getSelectedRow();
         
         //Move row       
-        modelRented.addRow(new Object[] {tblItems.getValueAt(row, 0),tblItems.getValueAt(row, 1),tblItems.getValueAt(row, 2),tblItems.getValueAt(row, 3),tblItems.getValueAt(row, 4)});
-        modelItems.removeRow(row);        
-                
-        System.out.println("Item Added");
+        modelRented.addRow(new Object[] {AvItemsTable.getValueAt(row, 0),AvItemsTable.getValueAt(row, 1),AvItemsTable.getValueAt(row, 2),AvItemsTable.getValueAt(row, 3),AvItemsTable.getValueAt(row, 4),AvItemsTable.getValueAt(row, 5)});
+        modelItems.removeRow(row);       
     }
     
     private void bRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bRemoveActionPerformed
-        if(tblRented.getSelectedRow() != -1)
+        if(rentedItemsTable.getSelectedRow() != -1)
             remove();
         else
             JOptionPane.showMessageDialog(this, "Please select an item to return");
     }//GEN-LAST:event_bRemoveActionPerformed
     
     private void remove() {
-        int row = tblRented.getSelectedRow();
-        //Edit Arrays
-        Item item = rentedItemsArray.remove(row);  
-        availableItemsArray.add(item);
-
+        int row = rentedItemsTable.getSelectedRow();
+        
         //Move row   
-        modelItems.addRow(new Object[] {tblRented.getValueAt(row, 0),tblRented.getValueAt(row, 1),tblRented.getValueAt(row, 2),tblRented.getValueAt(row, 3),tblRented.getValueAt(row, 4)});
+        modelItems.addRow(new Object[] {rentedItemsTable.getValueAt(row, 0),rentedItemsTable.getValueAt(row, 1),rentedItemsTable.getValueAt(row, 2),rentedItemsTable.getValueAt(row, 3),rentedItemsTable.getValueAt(row, 4),rentedItemsTable.getValueAt(row, 5)});
         modelRented.removeRow(row);        
-                             
-        System.out.println("Item Removed");
     }
     
     private void jXDatePicker1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jXDatePicker1ActionPerformed
-        if(tblRented.getSelectedRow() != -1) {
+        if(rentedItemsTable.getSelectedRow() != -1) {
             String chosenDate = jXDatePicker1.getEditor().getText();
             String d = df2.format(new Date());
             try {    
@@ -316,9 +344,9 @@ public class RentalProcess extends javax.swing.JFrame {
                 }
 
                 else {           
-                    int[] rows = tblRented.getSelectedRows();
+                    int[] rows = rentedItemsTable.getSelectedRows();
                     for(int eachRow : rows)
-                        modelRented.setValueAt(chosenDate, eachRow, 5);
+                        modelRented.setValueAt(chosenDate, eachRow, 6);
                 }
             } catch (ParseException ex) {
                 Logger.getLogger(RentalProcess.class.getName()).log(Level.SEVERE, null, ex);
@@ -331,22 +359,8 @@ public class RentalProcess extends javax.swing.JFrame {
     }//GEN-LAST:event_jXDatePicker1ActionPerformed
     
     private void bOKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bOKActionPerformed
-        int key = Integer.parseInt(custKey.getText());
-        c = Inventory.getCustomerMap().get(key);
-        int custID = c.getId();
-        
-        int row = tblItems.getRowCount();                                           //HashMap to get the available items knowing the row(key)
-        if(row > 0) {
-            for(int i = 0; i < row; i++)                 
-                availableItemsMap.put(i, availableItemsArray.get(i));
-        }
-        
-        int row2 = tblRented.getRowCount();                                         //HashMap to get the rented items knowing the row(key)
-        if(row2 > 0) {
-            for(int i = 0; i < row2; i++)  
-                rentedItemsMap.put(i, rentedItemsArray.get(i));
-        }
-        
+        String custID = custKey.getText();
+                
         if(!hasReturnDate())                                                            //Check date field 
             JOptionPane.showMessageDialog(this, "Please select a return date for each item"); 
         else {
@@ -365,10 +379,9 @@ public class RentalProcess extends javax.swing.JFrame {
             Date d = new Date();
             date = df.format(d);
             String itemsInfo = printItems(addedItems);
-            String customerName = c.getFirstName()+" "+c.getLastName();
+            String customerName = custName.getText();
             
             if(rows > 0) {                                                              //Check if something is rented otherwise no new receipt
-                
                 int invoiceNo = getInvoiceNo(itemsInfo, custID);                        //Check if a receipt for this customer with these addedItems already exists
                 if(invoiceNo == -1) {                                                   //No such receipt exists                    
                     createReceipt(itemsInfo, custID, customerName);                     //Create new receipt and add it to database
@@ -382,15 +395,11 @@ public class RentalProcess extends javax.swing.JFrame {
                     receipt.getLabelInvoiceNo().setText(Integer.toString(invoiceNo));
                     receipt.setVisible(true);
                     
-                    Inventory.updateReceiptsTable(); 
+                    Inventory.updateReceiptsTable();                                    
                 }
                 else {}                                                                 //If receipt already exists do nothing 
             }
-            else {}        
-            
-            //updateAvailableItemsTable();
-            //updateRentedItemsTable(c);
-            
+            else {}  
             
             this.dispose();
         }
@@ -400,32 +409,22 @@ public class RentalProcess extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_bCancelActionPerformed
 
-    private void tblItemsFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_tblItemsFocusGained
-        
-        tblRented.getSelectionModel().clearSelection();        
-    }//GEN-LAST:event_tblItemsFocusGained
+    private void AvItemsTableFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_AvItemsTableFocusGained
+        rentedItemsTable.getSelectionModel().clearSelection();        
+    }//GEN-LAST:event_AvItemsTableFocusGained
 
-    private void tblRentedFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_tblRentedFocusGained
-        
-        tblItems.getSelectionModel().clearSelection();
-    }//GEN-LAST:event_tblRentedFocusGained
-
-    private void tblItemsFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_tblItemsFocusLost
-        
-    }//GEN-LAST:event_tblItemsFocusLost
-
-    private void tblRentedFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_tblRentedFocusLost
-        
-    }//GEN-LAST:event_tblRentedFocusLost
+    private void rentedItemsTableFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_rentedItemsTableFocusGained
+        AvItemsTable.getSelectionModel().clearSelection();
+    }//GEN-LAST:event_rentedItemsTableFocusGained
     
-    private void createReceipt(String itemsInfo, int custID, String customerName) {
+    private void createReceipt(String itemsInfo, String custID, String customerName) {
         try {
             String sql = "INSERT INTO villa_watt_inventory.receipts (Date,ItemsInfo,CustID,CustName) VALUES(?,?,?,?);";
 
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, date);
             pstmt.setString(2, itemsInfo);
-            pstmt.setInt(3, custID);
+            pstmt.setString(3, custID);
             pstmt.setString(4, customerName);
             pstmt.execute();
 
@@ -434,14 +433,14 @@ public class RentalProcess extends javax.swing.JFrame {
         }
     }
     
-    private int getInvoiceNo(String itemsInfo, int custID) {
+    private int getInvoiceNo(String itemsInfo, String custID) {
         int invoiceNo = -1;
         try {
             String sql2 = "SELECT InvoiceNo FROM villa_watt_inventory.receipts WHERE ItemsInfo = ? AND CustID = ?;";
 
             PreparedStatement pstmt2 = conn.prepareStatement(sql2);
             pstmt2.setString(1, itemsInfo);
-            pstmt2.setInt(2, custID);
+            pstmt2.setString(2, custID);
             ResultSet rs = pstmt2.executeQuery(); 
 
             while(rs.next()) {
@@ -454,26 +453,30 @@ public class RentalProcess extends javax.swing.JFrame {
         return invoiceNo;
     }
     
-    private void addProcess(int rows, int custID, ArrayList<Item> items) {
+    private void addProcess(int rows, String custID, ArrayList<Item> items) {
         Item item;
         for(int i = 0; i < rows; i++) {
             //link custID to each item selected - foreign key in database   
             try {
-                item = rentedItemsMap.get(i);
-                int itemID = item.getId();
+                String itemID = rentedItemsTable.getValueAt(i, 0).toString();
                 
-                String returnDate = tblRented.getValueAt(i, 5).toString();
+                String returnDate = rentedItemsTable.getValueAt(i, 6).toString();
 
                 String sql = "UPDATE villa_watt_inventory.items SET Status = 'rented out',fk_custID = ?, ReturnDate = ? WHERE ItemID = ?;";
 
                 PreparedStatement pstmt = conn.prepareStatement(sql);
-                pstmt.setInt(1, custID);
+                pstmt.setString(1, custID);
                 pstmt.setString(2, returnDate);
-                pstmt.setInt(3, itemID); 
+                pstmt.setString(3, itemID); 
                 pstmt.execute(); 
                 
                 //Info for receipt
-                item = new Item(item.getSerialNo(),item.getType(),item.getBrand(),item.getModel(),item.getPrice(),returnDate);
+                String type = rentedItemsTable.getValueAt(i, 1).toString();
+                String brand = rentedItemsTable.getValueAt(i, 2).toString();
+                String model = rentedItemsTable.getValueAt(i, 3).toString();
+                String price = rentedItemsTable.getValueAt(i, 4).toString();
+                
+                item = new Item(itemID,type,brand,model,price,returnDate);
                 items.add(item);                                                        //To keep in memory which item(s) to display on the receipt
 
             } catch (SQLException ex) {
@@ -487,13 +490,12 @@ public class RentalProcess extends javax.swing.JFrame {
         for(int j = 0; j < rows; j++) {
             try {
                 //Change item status and break fk with customer
-                Item item = availableItemsMap.get(j);
-                int itemID = item.getId();                   
+                String itemID = AvItemsTable.getValueAt(j, 0).toString();
 
                 String sql = "UPDATE villa_watt_inventory.items SET Status = 'available',fk_custID = NULL,ReturnDate = NULL WHERE ItemID = ?;";
 
                 PreparedStatement pstmt = conn.prepareStatement(sql);
-                pstmt.setInt(1, itemID);
+                pstmt.setString(1, itemID);
                 pstmt.execute();                         
 
             } catch (SQLException ex) {
@@ -512,89 +514,41 @@ public class RentalProcess extends javax.swing.JFrame {
     }
     
     private boolean hasReturnDate() {
-        int rows = tblRented.getRowCount();
+        int rows = rentedItemsTable.getRowCount();
         for(int i = 0; i < rows; i++)
-            if(tblRented.getValueAt(i, 5) == null)
+            if(rentedItemsTable.getValueAt(i, 6) == null)
                 return false;
         return true;                
     }
         
     public void updateAvailableItemsTable() {        
         try {
-            String sql = "SELECT SerialNo,Type,Brand,Model,Price FROM villa_watt_inventory.items WHERE Status = 'available';";
+            String sql = "SELECT itemID,SerialNo,Type,Brand,Model,Price FROM villa_watt_inventory.items WHERE Status = 'available';";
             
             PreparedStatement pstmt = conn.prepareStatement(sql);
             ResultSet rs = pstmt.executeQuery();
             
-            tblItems.setModel(DbUtils.resultSetToTableModel(rs));
-            modelItems = (DefaultTableModel)tblItems.getModel();
+            AvItemsTable.setModel(DbUtils.resultSetToTableModel(rs));
+            modelItems = (DefaultTableModel)AvItemsTable.getModel();
          
         } catch (SQLException ex) {
             Logger.getLogger(RentalProcess.class.getName()).log(Level.SEVERE, null, ex);
         }             
     }
     
-    public void getAvailableItems() {
-        try {   
-            
-            String sql = "SELECT ItemID,SerialNo,Type,Brand,Model,Price,fk_custID FROM villa_watt_inventory.items WHERE Status = 'available';"; //add custID
-            
-            PreparedStatement pstmt = conn.prepareStatement(sql);
-            ResultSet rs = pstmt.executeQuery(); 
-            while(rs.next()) {
-                int id          = rs.getInt("ItemID");
-                String serialNo = rs.getString("SerialNo");
-                String type     = rs.getString("Type");
-                String brand    = rs.getString("Brand");
-                String model    = rs.getString("Model");
-                String price    = rs.getString("Price");
-                int fk          = rs.getInt("fk_custID");
-                
-                Item item = new Item(id,serialNo,type,brand,model,price,fk);
-                availableItemsArray.add(item);
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(RentalProcess.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-    
-    public void updateRentedItemsTable(Customer c) {           
-        int custID = c.getId();
+    public void updateRentedItemsTable(String custID) { 
         try {
-            String sql = "SELECT SerialNo,Type,Brand,Model,Price,ReturnDate FROM villa_watt_inventory.items WHERE fk_custID = '"+custID+"';";
+            String sql = "SELECT itemID,SerialNo,Type,Brand,Model,Price,ReturnDate FROM villa_watt_inventory.items WHERE fk_custID = '"+custID+"';";
             
             PreparedStatement pstmt = conn.prepareStatement(sql);
             ResultSet rs = pstmt.executeQuery();
             
-            tblRented.setModel(DbUtils.resultSetToTableModel(rs));
-            modelRented = (DefaultTableModel)tblRented.getModel();
+            rentedItemsTable.setModel(DbUtils.resultSetToTableModel(rs));
+            modelRented = (DefaultTableModel)rentedItemsTable.getModel();
         } catch (SQLException ex) {
             Logger.getLogger(RentalProcess.class.getName()).log(Level.SEVERE, null, ex);
         }             
     } 
-    
-    public void getRentedItems(Customer c) {
-        try {   
-            int custID = c.getId();
-            String sql = "SELECT ItemID,SerialNo,Type,Brand,Model,Price FROM villa_watt_inventory.items WHERE fk_custID= '"+custID+"';"; 
-            
-            PreparedStatement pstmt = conn.prepareStatement(sql);
-            ResultSet rs = pstmt.executeQuery(); 
-            while(rs.next()) {
-                int id          = rs.getInt("ItemID");
-                String serialNo = rs.getString("SerialNo");
-                String type     = rs.getString("Type");
-                String brand    = rs.getString("Brand");
-                String model    = rs.getString("Model");
-                String price    = rs.getString("Price");
-                
-                Item item = new Item(id,serialNo,type,brand,model,price,custID);
-                rentedItemsArray.add(item);
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(RentalProcess.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
     
     public JLabel getCustName() {
         return custName;
@@ -649,6 +603,7 @@ public class RentalProcess extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTable AvItemsTable;
     private javax.swing.JButton bAdd;
     private javax.swing.JButton bCancel;
     private javax.swing.JButton bOK;
@@ -663,7 +618,8 @@ public class RentalProcess extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JSeparator jSeparator1;
     private org.jdesktop.swingx.JXDatePicker jXDatePicker1;
-    private javax.swing.JTable tblItems;
-    private javax.swing.JTable tblRented;
+    private javax.swing.JTable rentedItemsTable;
+    private javax.swing.JLabel searchIcon;
+    private javax.swing.JTextField tfFilterAvItems;
     // End of variables declaration//GEN-END:variables
 }
