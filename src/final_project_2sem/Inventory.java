@@ -800,7 +800,6 @@ public class Inventory extends javax.swing.JFrame {
             pstmt.execute();    
 
             //Update customer list
-            System.out.println(row);
             customersTableModel.removeRow(row);                                             
             JOptionPane.showMessageDialog(this, "Customer successfully deleted");
 
@@ -851,7 +850,7 @@ public class Inventory extends javax.swing.JFrame {
     private void receiptsTableMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_receiptsTableMousePressed
         if(evt.getClickCount() == 2) {
             ReceiptGenerator rg = ReceiptGenerator.getReceipt();
-            String invoiceNo = receiptsTableModel.getValueAt(receiptsTable.getSelectedRow(), 0).toString();
+            String invoiceNo = receiptsTable.getValueAt(receiptsTable.getSelectedRow(), 0).toString();
             try {
                 String sql = "SELECT Date,ItemsInfo,CustName FROM villa_watt_inventory.receipts WHERE InvoiceNo = ?;";
             
