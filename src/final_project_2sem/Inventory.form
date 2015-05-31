@@ -84,7 +84,7 @@
                               <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                               <Component id="searchIcon2" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="tfFilterItem" min="-2" pref="90" max="-2" attributes="0"/>
+                              <Component id="tfFilterItems" min="-2" pref="90" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
@@ -97,7 +97,7 @@
                       <EmptySpace min="-2" pref="15" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="searchIcon2" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Component id="tfFilterItem" min="-2" max="-2" attributes="0"/>
+                          <Component id="tfFilterItems" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace min="-2" pref="7" max="-2" attributes="0"/>
                       <Component id="jScrollPane1" pref="266" max="32767" attributes="0"/>
@@ -173,14 +173,14 @@
                 </Component>
               </SubComponents>
             </Container>
-            <Component class="javax.swing.JTextField" name="tfFilterItem">
+            <Component class="javax.swing.JTextField" name="tfFilterItems">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Verdana" size="11" style="0"/>
                 </Property>
               </Properties>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="tfFilterItem.getDocument().addDocumentListener(new DocumentListener(){&#xa;    @Override&#xa;    public void insertUpdate(DocumentEvent e) {&#xa;        filterItems();&#xa;    }&#xa;&#xa;    @Override&#xa;    public void removeUpdate(DocumentEvent e) {&#xa;        filterItems();&#xa;    }&#xa;&#xa;    @Override&#xa;    public void changedUpdate(DocumentEvent e) {&#xa;        throw new UnsupportedOperationException(&quot;Not supported yet.&quot;); //To change body of generated methods, choose Tools | Templates.&#xa;    }&#xa;&#xa;});"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="tfFilterItems.getDocument().addDocumentListener(new DocumentListener(){&#xa;    @Override&#xa;    public void insertUpdate(DocumentEvent e) {&#xa;        filter(tfFilterItems.getText(),rowSorter);&#xa;    }&#xa;&#xa;    @Override&#xa;    public void removeUpdate(DocumentEvent e) {&#xa;        filter(tfFilterItems.getText(),rowSorter);&#xa;    }&#xa;&#xa;    @Override&#xa;    public void changedUpdate(DocumentEvent e) {&#xa;        throw new UnsupportedOperationException(&quot;Not supported yet.&quot;); //To change body of generated methods, choose Tools | Templates.&#xa;    }&#xa;&#xa;});"/>
               </AuxValues>
             </Component>
             <Component class="javax.swing.JLabel" name="searchIcon2">
@@ -258,7 +258,7 @@
                 </Property>
               </Properties>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="tfFilterCust.getDocument().addDocumentListener(new DocumentListener(){&#xa;    @Override&#xa;    public void insertUpdate(DocumentEvent e) {&#xa;        filterCustomers();&#xa;    }&#xa;&#xa;    @Override&#xa;    public void removeUpdate(DocumentEvent e) {&#xa;        filterCustomers();&#xa;    }&#xa;&#xa;    @Override&#xa;    public void changedUpdate(DocumentEvent e) {&#xa;        throw new UnsupportedOperationException(&quot;Not supported yet.&quot;); &#xa;    }&#xa;});"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="tfFilterCust.getDocument().addDocumentListener(new DocumentListener(){&#xa;    @Override&#xa;    public void insertUpdate(DocumentEvent e) {&#xa;        filter(tfFilterCust.getText(),rowSorter2);&#xa;    }&#xa;&#xa;    @Override&#xa;    public void removeUpdate(DocumentEvent e) {&#xa;        filter(tfFilterCust.getText(),rowSorter2);&#xa;    }&#xa;&#xa;    @Override&#xa;    public void changedUpdate(DocumentEvent e) {&#xa;        throw new UnsupportedOperationException(&quot;Not supported yet.&quot;); &#xa;    }&#xa;});"/>
               </AuxValues>
             </Component>
             <Container class="javax.swing.JScrollPane" name="jScrollPane4">
@@ -434,7 +434,7 @@
                 </Property>
               </Properties>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="tfFilterReceipts.getDocument().addDocumentListener(new DocumentListener(){&#xa;    @Override&#xa;    public void insertUpdate(DocumentEvent e) {&#xa;        filterReceipts();&#xa;    }&#xa;&#xa;    @Override&#xa;    public void removeUpdate(DocumentEvent e) {&#xa;        filterReceipts();&#xa;    }&#xa;&#xa;    @Override&#xa;    public void changedUpdate(DocumentEvent e) {&#xa;        throw new UnsupportedOperationException(&quot;Not supported yet.&quot;); &#xa;    }&#xa;});"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="tfFilterReceipts.getDocument().addDocumentListener(new DocumentListener(){&#xa;    @Override&#xa;    public void insertUpdate(DocumentEvent e) {&#xa;        filter(tfFilterReceipts.getText(),rowSorter3);&#xa;    }&#xa;&#xa;    @Override&#xa;    public void removeUpdate(DocumentEvent e) {&#xa;        filter(tfFilterReceipts.getText(),rowSorter3);&#xa;    }&#xa;&#xa;    @Override&#xa;    public void changedUpdate(DocumentEvent e) {&#xa;        throw new UnsupportedOperationException(&quot;Not supported yet.&quot;); &#xa;    }&#xa;});"/>
               </AuxValues>
             </Component>
             <Component class="javax.swing.JLabel" name="searchIcon3">
