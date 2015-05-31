@@ -646,7 +646,7 @@ public class Inventory extends javax.swing.JFrame {
         if(status.equals("rented out")) {
             Item item = itemsMap.get(Integer.parseInt(itemsTable.getValueAt(itemsTable.getSelectedRow(), 0).toString()));
             Customer cust = customersMap.get(item.getFk());
-            itemI.getLabelCust().setText(cust.getFirstName()+" "+cust.getLastName());
+            itemI.getLabelCust().setText(cust.getFName()+" "+cust.getLName());
             itemI.getLabelCust().setVisible(true);
             itemI.getLabelRent().setVisible(true);
               
@@ -705,8 +705,8 @@ public class Inventory extends javax.swing.JFrame {
             String id = String.valueOf(customersTable.getValueAt(row, 0));
             Customer c = customersMap.get(Integer.parseInt(id));
             
-            custI.getFirstName().setText(c.getFirstName());
-            custI.getLastName().setText(c.getLastName());
+            custI.getFirstName().setText(c.getFName());
+            custI.getLastName().setText(c.getLName());
             custI.getAddress().setText(c.getAddress());
             custI.getPhone().setText(c.getPhoneNo());
             custI.getEmail().setText(c.getEmail());
@@ -920,7 +920,7 @@ public class Inventory extends javax.swing.JFrame {
         rent.enableSorting();
 
         //Display customer's name
-        rent.getCustName().setText(c.getFirstName()+" "+c.getLastName());  
+        rent.getCustName().setText(c.getFName()+" "+c.getLName());  
 
         //Put in the new frame the key(row) to retrieve the customer from HashMap
         rent.getCustKey().setText(custID);

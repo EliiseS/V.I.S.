@@ -281,6 +281,7 @@ public class RentalProcess extends javax.swing.JFrame {
         rowSorter = new TableRowSorter<>(AvItemsTable.getModel());
         AvItemsTable.setRowSorter(rowSorter);
     }
+    
     private void filterAvItems() {
         String text = tfFilterAvItems.getText();
         if (text.trim().length() == 0) {                                        //trim() returns a copy of the string, with leading and trailing whitespace omitted.
@@ -556,18 +557,6 @@ public class RentalProcess extends javax.swing.JFrame {
 
     public JLabel getCustKey() {
         return custKey;
-    }
-
-    public JButton getbAdd() {
-        return bAdd;
-    }
-
-    public JButton getbRemove() {
-        return bRemove;
-    }
-
-    public JXDatePicker getjXDatePicker1() {
-        return jXDatePicker1;
     }
 
     

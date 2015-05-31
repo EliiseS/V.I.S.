@@ -3,23 +3,23 @@ package final_project_2sem;
 
 public class Customer {
     int id;
-    String firstName;
-    String lastName;
+    String fName;
+    String lName;
     String address;
     String phoneNo;
     String email;    
     
     public Customer() {
-        firstName = "";
-        lastName  = "";
+        fName = "";
+        lName  = "";
         address   = "";
         phoneNo   = "";
         email     = "";
     }
-    public Customer(int id, String firstName, String lastName, String address, String phoneNo, String email){
+    public Customer(int id, String fName, String lName, String address, String phoneNo, String email){
         this.id        = id;
-        this.firstName = firstName;
-        this.lastName  = lastName;
+        this.fName     = fName;
+        this.lName     = lName;
         this.address   = address;
         this.phoneNo   = phoneNo;
         this.email     = email;
@@ -29,20 +29,20 @@ public class Customer {
         return id;
     }
     
-    public String getFirstName() {
-        return firstName;
+    public String getFName() {
+        return fName;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
+    public void setFName(String firstName) {
+        this.fName = firstName;
     }
 
-    public String getLastName() {
-        return lastName;
+    public String getLName() {
+        return lName;
     }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setLName(String lastName) {
+        this.lName = lastName;
     }
 
     public String getAddress() {
@@ -71,7 +71,7 @@ public class Customer {
 
     @Override
     public String toString() {
-        return "Customer{" + "id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", address=" + address + ", phoneNo=" + phoneNo + ", email=" + email + '}';
+        return "Customer{" + "id=" + id + ", firstName=" + fName + ", lastName=" + lName + ", address=" + address + ", phoneNo=" + phoneNo + ", email=" + email + '}';
     }
 
          
